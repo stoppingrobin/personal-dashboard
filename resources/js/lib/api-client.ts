@@ -1,20 +1,14 @@
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
-
-interface RequestConfig {
+export interface RequestConfig {
     method: HttpMethod;
     headers: Record<string, string>;
     body?: string;
 }
 
-class ApiClient {
-    private baseURL: string;
+export class ApiClient {
 
-    constructor(baseURL: string) {
-        this.baseURL = baseURL;
-    }
-
-    private async request<T>(
+    protected async request<T>(
         endpoint: string,
         method: HttpMethod = 'GET',
         data?: unknown,
@@ -32,7 +26,7 @@ class ApiClient {
             config.body = JSON.stringify(data);
         }
 
-        const response = await fetch(`${this.baseURL}${endpoint}`, config);
+        const response = await fetch(`${endpoint}`, config);
 
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
@@ -57,9 +51,4 @@ class ApiClient {
     delete<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
         return this.request<T>(endpoint, 'DELETE', undefined, headers);
     }
-
 }
-
-const apiClient = new ApiClient("");
-
-export default apiClient;
