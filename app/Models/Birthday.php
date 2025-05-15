@@ -13,4 +13,5 @@ class Birthday extends Model
          'name',
          'date'
      ];
+
 }
