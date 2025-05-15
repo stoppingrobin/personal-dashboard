@@ -1,49 +1,27 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import apiClient from '@/lib/ApiClient';
-import { StreetMapResponse, WeatherBlock, WeatherResponse } from '@/types/interfaces/weather-interfaces';
+import { WeatherBlock, WeatherResponse } from '@/types/interfaces/weather-interfaces';
 import { WeatherCard } from '@/components/weather/subcomponents/weather-card';
 import { DateArrow } from '@/components/ui/weather/date-arrow';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useLocation } from '@/hooks/context/location-context';
 
 export default function WeatherComp() {
+    const { location, geoDenied, isLoadingLocation } = useLocation();
     const [weatherBlocks, setWeatherBlocks] = useState<WeatherBlock[]>([]);
-    const [location, setLocation] = useState<string>('Loading...');
-    const [geoDenied, setGeoDenied] = useState<boolean>(false);
     const [dayOffset, setDayOffset] = useState<number>(0);
     const [isLoadingWeather, setIsLoadingWeather] = useState(false);
-    const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-
 
     useEffect(() => {
-        navigator.geolocation.getCurrentPosition(success, handleGeoError);
+        if (geoDenied) return;
+        navigator.geolocation.getCurrentPosition(success, () => {});
     }, [dayOffset]);
 
-    function handleGeoError() {
-        setGeoDenied(true);
-        setLocation('Location access denied');
-    }
-
     function success(position: GeolocationPosition) {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        setGeoDenied(false);
+        const { latitude, longitude } = position.coords;
         setIsLoadingWeather(true);
-        setIsLoadingLocation(true);
 
-        apiClient
-            .get<StreetMapResponse>(`http://127.0.0.1:8000/location?lat=${latitude}&lon=${longitude}`)
-            .then((res) => {
-                const city = res.address.town || res.address.municipality || res.address.county || '';
-                const country = res.address.country || '';
-                setLocation(`${city}, ${country}`.trim());
-            })
-            .catch((err) => {
-                setLocation('Unknown Location');
-                console.log(err);
-            })
-            .finally(() => setIsLoadingLocation(false));
-
+        // fetch weather (but NOT location anymore!)
         apiClient
             .get<WeatherResponse>(
                 `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,wind_speed_10m,weather_code&timezone=auto`
@@ -61,7 +39,7 @@ export default function WeatherComp() {
 
                         if (date === targetDateStr) {
                             if (dayOffset === 0 && hourNumber < currentHour) {
-                                return null; // skip past hours for today
+                                return null;
                             }
                             return {
                                 hour: hour.slice(0, 5),
@@ -82,16 +60,15 @@ export default function WeatherComp() {
             .finally(() => setIsLoadingWeather(false));
     }
 
-    const formattedDayLabel = () => {
+    const formattedDayLabel = useMemo(() => {
         const date = new Date();
         date.setDate(date.getDate() + dayOffset);
         return date.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' });
-    };
+    }, [dayOffset]);
 
     return (
         <div className="w-full max-w-5xl mx-auto p-4 h-full flex flex-col justify-between items-left no-scrollbar">
             {geoDenied ? (
-
                 <div className="text-red-500 font-medium">
                     Please allow location access in your browser settings to display the weather forecast.
                 </div>
@@ -99,11 +76,8 @@ export default function WeatherComp() {
                 <>
                     <div className="flex justify-between items-center mb-4">
                         <div>
-                            {isLoadingLocation ? <Skeleton/> : <h2 className="text-xl font-semibold">{location}</h2>}
-
-                            <p className="text-sm text-gray-400">
-                                {formattedDayLabel()}
-                            </p>
+                            {isLoadingLocation ? <Skeleton /> : <h2 className="text-xl font-semibold">{location}</h2>}
+                            <p className="text-sm text-gray-400">{formattedDayLabel}</p>
                         </div>
                         <div className="flex space-x-2">
                             <DateArrow className="disabled:opacity-30" disabled={dayOffset === 0}
@@ -117,14 +91,15 @@ export default function WeatherComp() {
                         </div>
                     </div>
 
-                    {isLoadingWeather ? <Skeleton/> : <div className="flex overflow-x-auto space-x-4 pb-4">
-                        {weatherBlocks.length === 0 ? (
-                            <div className="text-gray-400">No forecast data available for this day.</div>
-                        ) : (
-                            <WeatherCard weatherBlocks={weatherBlocks} />
-                        )}
-                    </div>}
-
+                    {isLoadingWeather ? <Skeleton /> : (
+                        <div className="flex overflow-x-auto space-x-4 pb-4">
+                            {weatherBlocks.length === 0 ? (
+                                <div className="text-gray-400">No forecast data available for this day.</div>
+                            ) : (
+                                <WeatherCard weatherBlocks={weatherBlocks} />
+                            )}
+                        </div>
+                    )}
                 </>
             )}
         </div>

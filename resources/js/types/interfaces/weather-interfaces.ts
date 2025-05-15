@@ -30,7 +30,6 @@ export interface StreetMapResponse{
     }
 }
 
-
 export const weatherCodeMap: Record<number, { emoji: string; description: string }> = {
     0: { emoji: "☀️", description: "Clear sky" },
     1: { emoji: "🌤️", description: "Mainly clear" },

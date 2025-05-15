@@ -8,12 +8,10 @@ import { PrimeReactProvider } from "primereact/api";
 
 
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-
-
+const appName = import.meta.env.VITE_APP_NAME || 'Anass';
 
 createInertiaApp({
-    title: (title) => `${title}`,
+    title: (title) => `${title} - ${appName}`,
     resolve: (name) => resolvePageComponent(`./pages/${name}.tsx`, import.meta.glob('./pages/**/*.tsx')),
     setup({ el, App, props }) {
         const root = createRoot(el);
@@ -29,5 +27,5 @@ createInertiaApp({
     }
 });
 
-// This will set light / dark mode on load...
+//theme initialization
 initializeTheme();
