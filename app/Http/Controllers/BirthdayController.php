@@ -17,10 +17,10 @@ class BirthdayController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $birthdays = Birthday::all();
-            return response()->json($birthdays, HttpCodes::SUCCESS);
+            $birthdays = Birthday::where('user_id', auth()->id())->get();
+            return response()->json($birthdays, HttpCodes::SUCCESS->value);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to fetch all birthdays.' . $e], HttpCodes::ERROR,);
+            return response()->json(['ERROR' => 'Failed to fetch all birthdays.' . $e], HttpCodes::ERROR->value);
         }
     }
 
@@ -40,9 +40,9 @@ class BirthdayController extends Controller
             return response()->json([
                 'message' => 'Birthday created successfully.',
                 'data' => $birthday,
-            ], HttpCodes::CREATED_SUCCESS);
+            ], HttpCodes::CREATED_SUCCESS->value);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to create birthday.' . $e], HttpCodes::ERROR);
+            return response()->json(['ERROR' => 'Failed to create birthday.' . $e], HttpCodes::ERROR->value);
         }
     }
 
@@ -53,11 +53,11 @@ class BirthdayController extends Controller
     {
         try {
             $birthday = Birthday::findOrFail($id);
-            return response()->json($birthday, HttpCodes::SUCCESS);
+            return response()->json($birthday, HttpCodes::SUCCESS->value);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Birthday not found.' . $e], HttpCodes::NOT_FOUNT);
+            return response()->json(['ERROR' => 'Birthday not found.' . $e], HttpCodes::NOT_FOUNT);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to fetch birthday.' . $e], HttpCodes::ERROR);
+            return response()->json(['ERROR' => 'Failed to fetch birthday.' . $e], HttpCodes::ERROR->value);
         }
     }
 
@@ -69,20 +69,20 @@ class BirthdayController extends Controller
         try {
             $validated = $request->validate([
                 'name' => 'required|string|max:255',
-                'birthdate' => 'required|date',
+                'birthdate' => 'required|date'
             ]);
 
             $birthday = Birthday::findOrFail($id);
             $birthday->update($validated);
 
             return response()->json([
-                'message' => 'Birthday updated successfully.',
-                'data' => $birthday,
-            ], HttpCodes::SUCCESS);
+                'message' => 'Birthday updated sucessfully.',
+                'data' => $birthday
+            ], HttpCodes::SUCCESS->value);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Birthday not found.' . $e], HttpCodes::NOT_FOUNT);
+            return response()->json(['ERROR' => 'Birthday not found.' . $e], HttpCodes::NOT_FOUNT);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to update birthday.' . $e], HttpCodes::ERROR);
+            return response()->json(['ERROR' => 'Failed to update birthday.' . $e], HttpCodes::ERROR->value);
         }
     }
 
@@ -96,12 +96,13 @@ class BirthdayController extends Controller
             $birthday->delete();
 
             return response()->json([
-                'message' => 'Birthday deleted successfully.',
-            ], HttpCodes::SUCCESS);
+                'message' => 'Birthday deleted successfully.'
+            ], HttpCodes::SUCCESS->value);
+
         } catch (ModelNotFoundException $e) {
-            return response()->json(['error' => 'Birthday not found.' . $e], HttpCodes::NOT_FOUNT);
+            return response()->json(['ERROR->value' => 'Birthday not found.' . $e], HttpCodes::NOT_FOUNT);
         } catch (Exception $e) {
-            return response()->json(['error' => 'Failed to delete birthday.' . $e], HttpCodes::ERROR);
+            return response()->json(['ERROR->value' => 'Failed to delete birthday.' . $e], HttpCodes::ERROR->value);
         }
     }
 }

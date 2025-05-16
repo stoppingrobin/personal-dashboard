@@ -17,7 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/location', [GeocodeController::class, 'index'])->name('location');
 
-Route::apiResource('birthdays', BirthdayController::class);
+Route::apiResource('/api/birthdays', BirthdayController::class);
 
 
 require __DIR__ . '/settings.php';
