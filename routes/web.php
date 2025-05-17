@@ -5,6 +5,7 @@ use App\Http\Controllers\Dashboard\Location\GeocodeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+// principal routes
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
@@ -15,9 +16,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
-Route::get('/location', [GeocodeController::class, 'index'])->name('location');
 
-Route::apiResource('birthdays', BirthdayController::class);
+// routes for user location
+Route::get('/location', [GeocodeController::class, 'index'])->name('location')->middleware('auth');
+
+
+// routes for birthdays
+Route::get('/api/birthdays/upcoming', [BirthdayController::class, 'upcoming'])->middleware('auth');
+Route::apiResource('/api/birthdays', BirthdayController::class);
+
 
 
 require __DIR__ . '/settings.php';

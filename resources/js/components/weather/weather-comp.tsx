@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { WeatherBlock, WeatherResponse } from '@/types/interfaces/weather-interfaces';
+import { WeatherBlock, WeatherResponse } from '@/types/interfaces/weather';
 import { WeatherCard } from '@/components/weather/subcomponents/weather-card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocation } from '@/hooks/context/location-context';
