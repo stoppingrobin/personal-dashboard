@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { ApiClient } from '@/lib/api-client';
 import error from 'eslint-plugin-react/lib/util/error';
 import { BirthdayRecordCard } from '@/components/birthdays/subcomponents/birthday-record-card';
+import { ArrowBigRightIcon, ArrowsUpFromLine, ArrowUpRight, ArrowUpRightFromCircle } from 'lucide-react';
+import { Link } from '@inertiajs/react';
 
 export default function BirthdayWidget()  {
 
@@ -27,10 +29,16 @@ export default function BirthdayWidget()  {
                 (<div>Loading...</div>)
                 :
                 <div className="w-full h-full flex flex-col justify-between">
-                    <h2 className="text-xl font-semibold">Birthdays</h2>
+                    <div className="w-full flex flex-row items-center justify-between gap-2 ">
+                        <h2 className="text-xl font-semibold">Birthdays</h2>
+                        <Link href="/birthdays">
+                            <ArrowUpRight className="w-6"/>
+
+                        </Link>
+                    </div>
 
                     <div className="flex flex-col gap-3 ">
-                        {birthdayRecords.map((birthdayRecord) => (
+                    {birthdayRecords.map((birthdayRecord) => (
                             <BirthdayRecordCard
                                 key={birthdayRecord.name}
                                 name={birthdayRecord.name}
