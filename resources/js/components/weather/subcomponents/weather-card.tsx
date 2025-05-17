@@ -1,4 +1,4 @@
-import { WeatherBlock, weatherCodeMap } from '@/types/interfaces/weather-interfaces';
+import { WeatherBlock, weatherCodeMap } from '@/types/interfaces/weather';
 
 interface WeatherForecastListProps {
     weatherBlocks: WeatherBlock[];

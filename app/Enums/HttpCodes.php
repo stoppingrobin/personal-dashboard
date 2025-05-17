@@ -8,5 +8,5 @@ enum HttpCodes : int
 
     case CREATED_SUCCESS = 201;
     case ERROR = 500;
-    case NOT_FOUNT = 404;
+    case NOT_FOUND = 404;
 }

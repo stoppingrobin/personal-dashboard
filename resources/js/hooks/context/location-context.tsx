@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import apiClient from '@/lib/ApiClient';
-import { StreetMapResponse } from '@/types/interfaces/weather-interfaces';
+import { StreetMapResponse } from '@/types/interfaces/weather';
+import { ApiClient } from '@/lib/api-client';
 
 interface LocationContextProps {
     location: string;
@@ -13,6 +13,7 @@ const LocationContext = createContext<LocationContextProps>({
     geoDenied: false,
     isLoadingLocation: true,
 });
+const apiClient = new ApiClient();
 
 export const useLocation = () => useContext(LocationContext);
 
@@ -41,7 +42,7 @@ export const LocationProvider = ({ children }: { children: ReactNode }) => {
         const { latitude, longitude } = position.coords;
 
         apiClient
-            .get<StreetMapResponse>(`http://127.0.0.1:8000/location?lat=${latitude}&lon=${longitude}`)
+            .get<StreetMapResponse>(`location?lat=${latitude}&lon=${longitude}`)
             .then((res) => {
                 const city = res.address.town || res.address.municipality || res.address.county || '';
                 const country = res.address.country || '';

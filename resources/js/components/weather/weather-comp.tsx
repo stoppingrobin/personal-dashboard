@@ -1,17 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import apiClient from '@/lib/ApiClient';
-import { WeatherBlock, WeatherResponse } from '@/types/interfaces/weather-interfaces';
+import { WeatherBlock, WeatherResponse } from '@/types/interfaces/weather';
 import { WeatherCard } from '@/components/weather/subcomponents/weather-card';
-import { DateArrow } from '@/components/ui/weather/date-arrow';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useLocation } from '@/hooks/context/location-context';
+import DateArrow from '@/components/ui/weather/date-arrow';
 
 export default function WeatherComp() {
     const { location, geoDenied, isLoadingLocation } = useLocation();
     const [weatherBlocks, setWeatherBlocks] = useState<WeatherBlock[]>([]);
     const [dayOffset, setDayOffset] = useState<number>(0);
     const [isLoadingWeather, setIsLoadingWeather] = useState(false);
-
     useEffect(() => {
         if (geoDenied) return;
         navigator.geolocation.getCurrentPosition(success, () => {});
@@ -20,13 +18,16 @@ export default function WeatherComp() {
     function success(position: GeolocationPosition) {
         const { latitude, longitude } = position.coords;
         setIsLoadingWeather(true);
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,wind_speed_10m,weather_code&timezone=auto`;
 
-        // fetch weather (but NOT location anymore!)
-        apiClient
-            .get<WeatherResponse>(
-                `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m,wind_speed_10m,weather_code&timezone=auto`
-            )
+        fetch(url)
             .then((res) => {
+                if (!res.ok) {
+                    throw new Error(`API error: ${res.status}`);
+                }
+                return res.json();
+            })
+            .then((res: WeatherResponse) => {
                 const now = new Date();
                 const targetDate = new Date(now.getTime() + dayOffset * 86400000);
                 const targetDateStr = targetDate.toISOString().split('T')[0];
@@ -45,7 +46,7 @@ export default function WeatherComp() {
                                 hour: hour.slice(0, 5),
                                 temperature: res.hourly.temperature_2m[index],
                                 windSpeed: res.hourly.wind_speed_10m[index],
-                                weatherCode: res.hourly.weather_code[index]
+                                weatherCode: res.hourly.weather_code[index],
                             };
                         }
                         return null;
@@ -58,6 +59,7 @@ export default function WeatherComp() {
             })
             .catch((err) => console.error(err))
             .finally(() => setIsLoadingWeather(false));
+
     }
 
     const formattedDayLabel = useMemo(() => {
@@ -76,18 +78,14 @@ export default function WeatherComp() {
                 <>
                     <div className="flex justify-between items-center mb-4">
                         <div>
-                            {isLoadingLocation ? <Skeleton /> : <h2 className="text-xl font-semibold">{location}</h2>}
+                            {isLoadingLocation ? <Skeleton/> : <h2 className="text-xl font-semibold">{location}</h2>}
                             <p className="text-sm text-gray-400">{formattedDayLabel}</p>
                         </div>
                         <div className="flex space-x-2">
-                            <DateArrow className="disabled:opacity-30" disabled={dayOffset === 0}
-                                       onClick={() => setDayOffset(dayOffset - 1)}>
-                                ← Prev
-                            </DateArrow>
+                            <DateArrow direction="left" className="disabled:opacity-30" disabled={dayOffset === 0}
+                                       onClick={() => setDayOffset(dayOffset - 1)}/>
+                            <DateArrow direction="right"  onClick={() => setDayOffset(dayOffset + 1)}/>
 
-                            <DateArrow onClick={() => setDayOffset(dayOffset + 1)}>
-                                Next →
-                            </DateArrow>
                         </div>
                     </div>
 
