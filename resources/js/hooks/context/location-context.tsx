@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { StreetMapResponse } from '@/types/interfaces/weather-interfaces';
+import { StreetMapResponse } from '@/types/interfaces/weather';
 import { ApiClient } from '@/lib/api-client';
 
 interface LocationContextProps {
