@@ -16,6 +16,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 });
 
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('birthdays', function () {
+        return Inertia::render('birthdays');
+    })->name('birthdays');
+});
 
 // routes for user location
 Route::get('/location', [GeocodeController::class, 'index'])->name('location')->middleware('auth');
