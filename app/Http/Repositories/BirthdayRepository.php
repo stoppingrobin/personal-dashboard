@@ -24,7 +24,7 @@ class BirthdayRepository implements BirthdaysRepositoryInterface
      * @param string $userId
      * @return mixed
      */
-    public function upcoming(string $userId): mixed
+    public function upcoming(string $userId, int $limit): mixed
     {
         $today = now()->startOfDay();
         $birthdays = Birthday::where('user_id', $userId)->get();
@@ -60,9 +60,9 @@ class BirthdayRepository implements BirthdaysRepositoryInterface
             }
         })
             ->filter()
-            ->sortBy('next_occurrence')
+            ->sortBy('days_left')
             ->values()
-            ->take(3);
+            ->take($limit);
 
         return $upcoming;
     }
