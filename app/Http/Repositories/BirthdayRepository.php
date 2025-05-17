@@ -60,7 +60,7 @@ class BirthdayRepository implements BirthdaysRepositoryInterface
             }
         })
             ->filter()
-            ->sortBy('next_occurrence')
+            ->sortBy('days_left')
             ->values()
             ->take(3);
 
