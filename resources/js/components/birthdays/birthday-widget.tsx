@@ -34,6 +34,8 @@ export default function BirthdayWidget()  {
                             <BirthdayRecordCard
                                 key={birthdayRecord.name}
                                 name={birthdayRecord.name}
+                                next_occurence={birthdayRecord.next_occurence}
+                                days_left={birthdayRecord.days_left}
                                 date={birthdayRecord.date}
                             />
                         ))}

@@ -1,41 +1,29 @@
-import moment from 'moment';
 import { useEffect, useState } from 'react';
 
 export function BirthdayRecordCard(record: BirthdaysRecord) {
 
+    const [daysLeft, setDaysLeft] = useState('Loading ...');
 
-    const [daysLeft, setDaysLeft] = useState('Loading...');
 
-
-    function timeUntilBirthday(dateStr: string): void {
-        // Extraire le jour et le mois, puis mettre l'année actuelle
-        const [day, month] = dateStr.split('-');
-        const currentYear = moment().year();
-        let birthdayThisYear = moment(`${day}-${month}-${currentYear}`, 'DD-MM-YYYY').endOf('day');
-        const now = moment();
-
-        if (birthdayThisYear.isBefore(now)) {
-            birthdayThisYear = birthdayThisYear.add(1, 'years');
+    const handleTimeLeftReturn = (daysLeft: number): void => {
+        daysLeft = Math.floor(daysLeft);
+        switch (daysLeft) {
+            case 1 :
+                setDaysLeft('Tomorrow !');
+                break;
+            case 0 :
+                setDaysLeft('Today');
+                break;
+            default :
+                setDaysLeft(`in ${daysLeft} days`);
+                break;
         }
-
-        const duration = moment.duration(birthdayThisYear.diff(now));
-        const days = Math.floor(duration.asDays());
-        const minutes = Math.floor(duration.asMinutes()) % (24 * 60);
-
-        if (days > 1) {
-            setDaysLeft(`${days} days and ${minutes} minutes left.`);
-        } else if (days === 1) {
-            setDaysLeft(`1 day left.`);
-        } else {
-            setDaysLeft(`Today is the birthday!`);
-        }
-    }
-
+    };
 
     useEffect(() => {
         setInterval(() => {
-            timeUntilBirthday(record.date);
-        }, 600);
+            handleTimeLeftReturn(record.days_left);
+        }, 6000);
     }, []);
 
 
@@ -48,6 +36,7 @@ export function BirthdayRecordCard(record: BirthdaysRecord) {
 
             <div>
                 {daysLeft}
+                {record.next_occurence}
             </div>
         </div>
     );
