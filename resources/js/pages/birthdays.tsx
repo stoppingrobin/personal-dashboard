@@ -8,16 +8,11 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/birthdays',
     },
 ];
-
-
 export default function Birthdays() {
-
-
 
     return (
         <AppLayout breadcrumbs={breadcrumbs} >
             <Head title="Birthdays" />
-            <div> hollaaa </div>
         </AppLayout>
     )
 }
