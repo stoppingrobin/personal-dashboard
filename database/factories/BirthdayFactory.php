@@ -32,6 +32,7 @@ class BirthdayFactory extends Factory
             'id'=> fake()->uuid(),
             'name' => fake()->name(),
             'date' => fake()->date('d/m/y'),
+            'notes' => fake()->text(),
             'user_id' => $user->id
         ];
     }

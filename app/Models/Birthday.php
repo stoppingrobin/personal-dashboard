@@ -14,7 +14,8 @@ class Birthday extends Model
 
      protected $fillable = [
          'name',
-         'date'
+         'date',
+         'notes'
      ];
 
     public function user() : BelongsTo
