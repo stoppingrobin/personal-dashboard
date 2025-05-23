@@ -4,5 +4,5 @@ export interface BirthdaysRecord{
     name: string,
     days_left : number,
     next_occurence : string
-    notes : string
+    notes? : string
 }
