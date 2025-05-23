@@ -33,7 +33,7 @@ class BirthdayController extends Controller
     public function upcoming() : JsonResponse
     {
         try {
-            $birthdays = $this->birthdayRepository->upcoming(auth()->id());
+            $birthdays = $this->birthdayRepository->upcoming(auth()->id(), 3);
             return response()->json($birthdays, HttpCodes::SUCCESS->value);
         } catch (Exception $e) {
             return response()->json(['ERROR' => 'Failed to fetch upcoming birthday records. ' . $e->getMessage()], HttpCodes::ERROR->value);

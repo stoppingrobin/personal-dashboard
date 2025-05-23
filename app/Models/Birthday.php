@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Traits\HasUuid;
-use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,7 +13,8 @@ class Birthday extends Model
 
      protected $fillable = [
          'name',
-         'date'
+         'date',
+         'notes'
      ];
 
     public function user() : BelongsTo
