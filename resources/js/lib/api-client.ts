@@ -1,4 +1,4 @@
-export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export interface RequestConfig {
     method: HttpMethod;
@@ -46,6 +46,10 @@ export class ApiClient {
 
     put<T>(endpoint: string, data: unknown, headers?: Record<string, string>): Promise<T> {
         return this.request<T>(endpoint, 'PUT', data, headers);
+    }
+
+    patch<T>(endpoint: string, data: unknown, headers?: Record<string, string>): Promise<T> {
+        return this.request<T>(endpoint, 'PATCH', data, headers);
     }
 
     delete<T>(endpoint: string, headers?: Record<string, string>): Promise<T> {
