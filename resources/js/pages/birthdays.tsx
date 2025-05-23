@@ -8,19 +8,16 @@ import {
     Transition,
     TransitionChild
 } from '@headlessui/react';
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Pencil, X } from 'lucide-react';
+import { ApiClient } from '@/lib/api-client';
+import { BirthdaysRecord } from '@/types/interfaces/birthday-records';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
         title: 'Birthdays',
-        href: '/birthdays',
-    },
-];
-
-const birthdays = [
-    { id: 1, name: "Sarah", date: "2025-06-01", note: "" },
-    { id: 2, name: "Youssef", date: "2025-05-30", note: "Loves chocolate cake" },
+        href: '/birthdays'
+    }
 ];
 
 function daysLeft(dateStr: string): number {
@@ -34,9 +31,22 @@ function daysLeft(dateStr: string): number {
     return Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 }
 
+const apiClient = new ApiClient();
+
 export default function Birthdays() {
-    const [openId, setOpenId] = useState<number | null>(null);
-    const [notes, setNotes] = useState<{ [key: number]: string }>({});
+    const [openId, setOpenId] = useState<string | null>(null);
+    const [notes, setNotes] = useState<{ [key: string]: string }>({});
+    const [birthdayRecords, setBirthdayRecords] = useState<BirthdaysRecord[]>([]);
+
+
+
+    useEffect(() => {
+        apiClient.get<BirthdaysRecord[]>('api/birthdays').then((res)=>{
+        setBirthdayRecords(res)
+        }).catch((err)=>{
+            console.error(err)
+        });
+    }, []);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -44,14 +54,15 @@ export default function Birthdays() {
             <div className="max-w-2xl mx-auto p-6">
                 <h1 className="text-3xl font-bold mb-8">Upcoming Birthdays 🎂</h1>
                 <div className="space-y-4">
-                    {birthdays.map((b) => (
+                    { birthdayRecords.map((b) => (
                         <div
                             key={b.id}
                             className="flex items-center justify-between bg-white rounded-2xl shadow-lg p-5 relative"
                         >
                             <div className="flex items-center gap-4">
                                 {/* Avatar/Initials */}
-                                <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold shadow">
+                                <div
+                                    className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-2xl font-bold shadow">
                                     {b.name[0]}
                                 </div>
                                 <div>
@@ -61,7 +72,8 @@ export default function Birthdays() {
                                             month: 'long',
                                             day: 'numeric'
                                         })}
-                                        <span className="ml-2 bg-blue-50 px-3 py-1 rounded-xl text-blue-700 font-medium text-xs">
+                                        <span
+                                            className="ml-2 bg-blue-50 px-3 py-1 rounded-xl text-blue-700 font-medium text-xs">
                       {daysLeft(b.date)} days left
                     </span>
                                     </div>
@@ -95,7 +107,8 @@ export default function Birthdays() {
                                         leaveFrom="translate-x-0"
                                         leaveTo="-translate-x-full"
                                     >
-                                        <DialogPanel className="relative w-full max-w-sm bg-white shadow-2xl p-6 rounded-r-2xl flex flex-col">
+                                        <DialogPanel
+                                            className="relative w-full max-w-sm bg-white shadow-2xl p-6 rounded-r-2xl flex flex-col">
                                             <div className="flex items-center justify-between mb-4">
                                                 <DialogTitle className="text-lg font-bold">
                                                     Note for {b.name}
@@ -110,7 +123,7 @@ export default function Birthdays() {
                                             </div>
                                             <textarea
                                                 className="w-full h-32 rounded-lg border p-3 text-base focus:ring-2 focus:ring-blue-400"
-                                                value={notes[b.id] ?? b.note ?? ""}
+                                                value={notes[b.id] ?? b.notes ?? ''}
                                                 placeholder="Add a note..."
                                                 onChange={e =>
                                                     setNotes({ ...notes, [b.id]: e.target.value })
