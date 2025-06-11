@@ -35,7 +35,12 @@ export function UserMenuContent({ user }: UserMenuContentProps) {
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-                <Link className="block w-full" method="post" href={route('logout')} as="button" onClick={handleLogout}>
+                <Link
+                    className="block w-full"
+                    method="post"
+                    href={route('logout')}
+                    as="button"
+                >
                     <LogOut className="mr-2" />
                     Log out
                 </Link>
